@@ -19,10 +19,11 @@ COPY .env* ./
 # 환경 변수 설정
 ENV PYTHONUNBUFFERED=1
 ENV PORT=8096
+ENV MCP_TRANSPORT=sse
 
 # 포트 노출
 EXPOSE 8096
 
-# MCP 서버 실행
-CMD ["python", "-m", "src.law_main"]
+# MCP SSE 서버 실행
+CMD ["python", "-m", "src.main"]
 

@@ -496,7 +496,7 @@ async def main():
     print("MCP Korean Law & Precedent Server starting...", file=sys.stderr)
     print("Server: korean-law-service", file=sys.stderr)
     print("Available tools: health, search_law_tool, get_law_detail_tool, search_precedent_tool, get_precedent_detail_tool, search_administrative_rule_tool", file=sys.stderr)
-    
+
     try:
         await mcp.run_stdio_async()
     except Exception as e:
@@ -507,13 +507,18 @@ async def main():
 
 
 if __name__ == "__main__":
-    # MCP 서버로 실행 (stdio 모드)
-    # HTTP 서버로 실행하려면 환경 변수 HTTP_MODE=1 설정
-    if os.environ.get("HTTP_MODE") == "1":
+    transport = os.environ.get("MCP_TRANSPORT", "stdio")
+
+    if transport == "sse":
+        # SSE 모드: Claude.ai 커넥터용 원격 MCP 서버
+        port = int(os.environ.get("PORT", 8096))
+        mcp.run(transport="sse", host="0.0.0.0", port=port)
+    elif os.environ.get("HTTP_MODE") == "1":
+        # HTTP REST API 모드 (레거시)
         import uvicorn
         port = int(os.environ.get('PORT', 8096))
         uvicorn.run("src.main:api", host="0.0.0.0", port=port, reload=False)
     else:
-        # MCP stdio 모드
+        # MCP stdio 모드 (로컬 Claude Code용)
         asyncio.run(main())
 

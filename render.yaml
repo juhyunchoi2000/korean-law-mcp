@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: korean-law-mcp
+    runtime: docker
+    plan: free
+    envVars:
+      - key: LAW_API_KEY
+        sync: false
+      - key: MCP_TRANSPORT
+        value: sse
+      - key: PORT
+        value: "8096"
