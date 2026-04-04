@@ -19,7 +19,7 @@ COPY .env* ./
 # 환경 변수 설정
 ENV PYTHONUNBUFFERED=1
 ENV PORT=8096
-ENV MCP_TRANSPORT=sse
+ENV MCP_TRANSPORT=streamable-http
 
 # 포트 노출
 EXPOSE 8096

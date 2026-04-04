@@ -509,10 +509,10 @@ async def main():
 if __name__ == "__main__":
     transport = os.environ.get("MCP_TRANSPORT", "stdio")
 
-    if transport == "sse":
-        # SSE 모드: Claude.ai 커넥터용 원격 MCP 서버
+    if transport in ("sse", "streamable-http"):
+        # 원격 MCP 서버: Claude.ai 커넥터용
         port = int(os.environ.get("PORT", 8096))
-        mcp.run(transport="sse", host="0.0.0.0", port=port)
+        mcp.run(transport=transport, host="0.0.0.0", port=port)
     elif os.environ.get("HTTP_MODE") == "1":
         # HTTP REST API 모드 (레거시)
         import uvicorn
