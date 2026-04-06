@@ -45,7 +45,7 @@ class LawSearchRequest(BaseModel):
 
 
 class LawDetailRequest(BaseModel):
-    law_serial_number: str = Field(..., description="조회할 법령일련번호 (search_law_tool 결과의 '법령일련번호' 값)")
+    law_id: str = Field(..., description="조회할 법령일련번호 (search_law_tool 결과의 '법령일련번호' 값, 예: '265959')")
 
 
 class PrecedentSearchRequest(BaseModel):
@@ -81,7 +81,7 @@ async def get_law_detail_impl(req: LawDetailRequest, arguments: Optional[dict] =
     try:
         if arguments is None:
             arguments = {}
-        return await asyncio.to_thread(get_law_detail, req.law_serial_number, arguments)
+        return await asyncio.to_thread(get_law_detail, req.law_id, arguments)
     except Exception as e:
         return {"error": f"법령 상세 조회 중 오류가 발생했습니다: {str(e)}"}
 
@@ -334,12 +334,12 @@ async def call_tool_http(tool_name: str, request_data: dict):
             )
 
         if tool_name == "get_law_detail_tool":
-            law_serial_number = request_data.get("law_serial_number") or request_data.get("law_id")
-            if not law_serial_number:
-                return {"error": "Missing required parameter: law_serial_number"}
-            convert_to_str(request_data, ["law_serial_number", "law_id"])
+            law_id = request_data.get("law_id")
+            if not law_id:
+                return {"error": "Missing required parameter: law_id"}
+            convert_to_str(request_data, ["law_id"])
             return await run_with_env(
-                get_law_detail, law_serial_number, arguments=request_data
+                get_law_detail, law_id, arguments=request_data
             )
 
         if tool_name == "search_precedent_tool":
@@ -413,18 +413,18 @@ async def search_law_tool(
 
 
 @mcp.tool()
-async def get_law_detail_tool(law_serial_number: str):
+async def get_law_detail_tool(law_id: str):
     """
     특정 법령의 상세 정보 및 전문(조문)을 조회합니다.
-    주의: 반드시 search_law_tool 결과의 '법령일련번호'를 사용하세요. '법령ID'가 아닙니다.
+    주의: law_id에는 반드시 search_law_tool 결과의 '법령일련번호' 값을 넣으세요.
 
     Args:
-        law_serial_number: 법령일련번호 (search_law_tool 결과의 '법령일련번호' 값, 예: '265959')
+        law_id: 법령일련번호 (search_law_tool 결과의 '법령일련번호' 값, 예: '265959')
 
     Returns:
         법령의 상세 정보와 조문 내용
     """
-    req = LawDetailRequest(law_serial_number=law_serial_number)
+    req = LawDetailRequest(law_id=law_id)
     return await get_law_detail_impl(req, None)
 
 
