@@ -45,7 +45,7 @@ class LawSearchRequest(BaseModel):
 
 
 class LawDetailRequest(BaseModel):
-    law_id: str = Field(..., description="조회할 법령 ID")
+    law_id: str = Field(..., description="조회할 법령일련번호 (법령 검색 결과의 '법령일련번호' 값)")
 
 
 class PrecedentSearchRequest(BaseModel):
@@ -416,9 +416,9 @@ async def search_law_tool(
 async def get_law_detail_tool(law_id: str):
     """
     특정 법령의 상세 정보 및 전문(조문)을 조회합니다.
-    
+
     Args:
-        law_id: 법령 ID (법령 검색 결과에서 얻은 법령ID)
+        law_id: 법령일련번호 (법령 검색 결과에서 얻은 '법령일련번호' 값, 예: '213837')
     
     Returns:
         법령의 상세 정보와 조문 내용

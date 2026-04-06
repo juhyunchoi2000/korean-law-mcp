@@ -217,6 +217,7 @@ def _search_law_impl(query: str, page: int, page_size: int, arguments: Optional[
         laws = []
         for law in root.findall(".//law"):
             law_data = {
+                "법령일련번호": law.findtext("법령일련번호", ""),
                 "법령ID": law.findtext("법령ID", ""),
                 "법령명": law.findtext("법령명한글", ""),
                 "법령명_약칭": law.findtext("법령약칭명", ""),
@@ -339,22 +340,24 @@ def _get_law_detail_impl(law_id: str, arguments: Optional[dict] = None) -> Dict:
         # 기본 정보
         law_info = {
             "법령ID": root.findtext(".//법령ID", ""),
-            "법령명": root.findtext(".//법령명한글", ""),
-            "법령구분": root.findtext(".//법령구분명", ""),
-            "소관부처": root.findtext(".//소관부처명", ""),
+            "법령명": root.findtext(".//법령명_한글", "") or root.findtext(".//법령명한글", ""),
+            "법령약칭": root.findtext(".//법령명약칭", ""),
+            "법종구분": root.findtext(".//법종구분", ""),
+            "소관부처": root.findtext(".//소관부처", "") or root.findtext(".//소관부처명", ""),
             "공포일자": root.findtext(".//공포일자", ""),
             "시행일자": root.findtext(".//시행일자", ""),
+            "제개정구분": root.findtext(".//제개정구분", ""),
         }
-        
-        # 조문 정보
+
+        # 조문 정보 (조문단위 태그 사용)
         articles = []
-        for article in root.findall(".//조문"):
+        for article in root.findall(".//조문단위"):
             article_data = {
                 "조문번호": article.findtext("조문번호", ""),
-                "조문제목": article.findtext("조문제목", ""),
-                "조문내용": article.findtext("조문내용", "")
+                "조문내용": (article.findtext("조문내용", "") or "").strip()
             }
-            articles.append(article_data)
+            if article_data["조문내용"]:
+                articles.append(article_data)
         
         law_info["조문"] = articles
         law_info["조문수"] = len(articles)
