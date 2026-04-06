@@ -218,7 +218,6 @@ def _search_law_impl(query: str, page: int, page_size: int, arguments: Optional[
         for law in root.findall(".//law"):
             law_data = {
                 "법령일련번호": law.findtext("법령일련번호", ""),
-                "법령ID": law.findtext("법령ID", ""),
                 "법령명": law.findtext("법령명한글", ""),
                 "법령명_약칭": law.findtext("법령약칭명", ""),
                 "법령구분": law.findtext("법령구분명", ""),
